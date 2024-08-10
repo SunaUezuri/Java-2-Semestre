@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main {
+public class ListTest {
     public static void main(String[] args) {
 
         List<String> compras = new ArrayList<>();
@@ -50,11 +50,17 @@ public class Main {
 
         //Achar o local do chocolate na lista
 
-        System.out.println("Nesta posição está localizado o: " + compras.get(0));
+        System.out.println("Nesta posição está localizado o: " + compras.indexOf("Chocolate"));
 
         //criar uma sub-lista com os 2 primeiros elementos
 
-        System.out.println("Sub-lista criada com: " + compras.subList(0, 2));
+        List<String> subLista = compras.subList(0,2);
+
+
+        System.out.println("Sub-lista feita!");
+        for (String item : subLista){
+            System.out.println(item);
+        }
 
 
         //Percorrer a lista e exibir o item da lista
