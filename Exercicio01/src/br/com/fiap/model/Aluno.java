@@ -5,6 +5,15 @@ public class Aluno {
     private int idade;
     private double nota;
 
+    @Override
+    public String toString() {
+        return  "RM: " + rm +
+                "Aluno: " + nome +
+                "Idade: " + idade +
+                "Nota: " + nota;
+
+    }
+
     public Aluno(String rm, String nome, int idade, double nota) {
         this.rm = rm;
         this.nome = nome;
