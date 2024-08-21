@@ -32,13 +32,26 @@ public class Funcionario {
         this.salario = salario;
     }
 
-    public double calculaFerias(){
-        return salario += salario / 3;
+    public double calculaFerias(int dias) throws Exception{
+        //Validar os dias
+        if (dias < 1 || dias > 30){
+            throw new Exception("Tá pedindo demais meu consagrado...");
+        }
+
+        return (salario + salario / 3) * dias / 30;
     }
 
-    public double calculaPLD(double metaObtida){
-        if (metaObtida == 25.0){
-            
+    public double calculaPLD(boolean metaObtida, int meses) throws Exception{
+
+        //Validar os meses entre 1 e 12
+        if (meses < 1 || meses > 12){
+            throw new Exception("Quantidade de meses inválido!");
         }
+
+        if (metaObtida){
+            return salario * 5 * meses/12;
+        }
+        return 0;
+
     }
 }
