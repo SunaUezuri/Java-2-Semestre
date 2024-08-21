@@ -1,4 +1,5 @@
-package br.com.fiap.model;
+package br.com.fiap.model.model;
+import br.com.fiap.model.exception.MesesInvalidosException;
 
 public class Funcionario {
 
@@ -45,7 +46,7 @@ public class Funcionario {
 
         //Validar os meses entre 1 e 12
         if (meses < 1 || meses > 12){
-            throw new Exception("Quantidade de meses inválido!");
+            throw new MesesInvalidosException("Quantidade de meses inválido!");
         }
 
         if (metaObtida){
