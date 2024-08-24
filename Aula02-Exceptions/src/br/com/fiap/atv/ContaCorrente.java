@@ -1,5 +1,7 @@
 package br.com.fiap.atv;
 
+import br.com.fiap.error.ValorInvalido;
+
 public class ContaCorrente {
 
     private double saldo;
@@ -13,17 +15,20 @@ public class ContaCorrente {
 
     public ContaCorrente(){}
 
-    public ContaCorrente(double saldo, double limite) {
+    public ContaCorrente(double saldo, double limite){
+        if (saldo < 0){
+            throw new RuntimeException("Valor menor que zero não pode!");
+        }
+
+        if (limite < 0){
+            throw new RuntimeException("Valor menor que zero não pode!");
+        }
         this.saldo = saldo;
         this.limite = limite;
     }
 
     public double getSaldo() {
         return saldo;
-    }
-
-    public void setSaldo(double saldo) {
-        this.saldo = saldo;
     }
 
     public double getLimite() {
@@ -34,11 +39,24 @@ public class ContaCorrente {
         this.limite = limite;
     }
 
-    public void sacar(double valor){
+    public void sacar(double valor) throws Exception{
+        if (valor < 0){
+            throw new ValorInvalido();
+        }
+
+        if (valor > saldo){
+            throw new ValorInvalido(saldo);
+        }
+
         saldo -= valor;
     }
 
-    public void depositar(double valor){
+    public void depositar(double valor) throws Exception{
+
+        if (valor < 0){
+            throw new ValorInvalido();
+        }
+
         saldo += valor;
     }
 }
