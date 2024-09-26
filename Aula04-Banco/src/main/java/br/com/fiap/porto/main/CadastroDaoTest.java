@@ -11,7 +11,7 @@ public class CadastroDaoTest {
     public static void main(String[] args) {
         //Ler os dados do carro
         String modelo = JOptionPane.showInputDialog("Digite o modelo do carro");
-        String placa = JOptionPane.showInputDialog("Digite a marca do carro");
+        String placa = JOptionPane.showInputDialog("Digite a placa do carro");
         float motor = Float.parseFloat(JOptionPane.showInputDialog("Digite o motor do carro"));
         boolean automatico = JOptionPane.showConfirmDialog(null, "É automático?",
                         "Automático", JOptionPane.YES_NO_OPTION) == 0;

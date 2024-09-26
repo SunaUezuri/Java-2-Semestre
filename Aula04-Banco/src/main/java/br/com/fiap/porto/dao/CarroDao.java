@@ -1,5 +1,6 @@
 package br.com.fiap.porto.dao;
 
+import br.com.fiap.porto.exception.IdNaoEncontradoException;
 import br.com.fiap.porto.factory.ConnectionFactory;
 import br.com.fiap.porto.model.Carro;
 
@@ -27,15 +28,22 @@ public class CarroDao {
     //TAREFA
 
     //Pesquisar o carro por id
-    public Carro pesquisarPorId(int id) throws SQLException, ClassNotFoundException{
+    public Carro pesquisarPorId(int id) throws SQLException, ClassNotFoundException, IdNaoEncontradoException {
         //Criar uma conexão com o banco
         Connection conexao = ConnectionFactory.getConnection();
         //Criar um Statement
-        PreparedStatement stm = conexao.prepareStatement("select from t_carro where id_carro = ?");
+        PreparedStatement stm = conexao.prepareStatement("select * from t_carro where id_carro = ?");
+        //Setar o id no comando SQL
+        stm.setInt(1, id);
+        //Executar o comando SQL
+        ResultSet resultSet = stm.executeQuery();
+        //Recuperar o registro, se existir
+        if (!resultSet.next()){
+            throw new IdNaoEncontradoException("Carro não encontrado.");
+        }
+            //Carro carro = parseCarro(resultSet);
+            return parseCarro(resultSet);
 
-
-
-        return null;
     }
 
 
@@ -50,14 +58,7 @@ public class CarroDao {
         List<Carro> lista = new ArrayList<>();
         //Percorrer os registros
         while (resultSet.next()){
-            int id = resultSet.getInt("id_carro");
-            String modelo = resultSet.getString("ds_modelo");
-            String placa = resultSet.getString("nr_placa");
-            float motor = resultSet.getFloat("ds_motor");
-            boolean automatico = resultSet.getBoolean("ds_automatico");
-
-            //Criar o objeto carro
-            Carro carro = new Carro(id, modelo, placa, motor, automatico);
+            Carro carro = parseCarro(resultSet);
 
             //Adicionar carro na lista
             lista.add(carro);
@@ -68,8 +69,20 @@ public class CarroDao {
         return lista;
     }
 
+    private Carro parseCarro(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id_carro");
+        String modelo = resultSet.getString("ds_modelo");
+        String placa = resultSet.getString("nr_placa");
+        float motor = resultSet.getFloat("ds_motor");
+        boolean automatico = resultSet.getBoolean("ds_automatico");
+
+        //Criar o objeto carro
+        Carro carro = new Carro(id, modelo, placa, motor, automatico);
+        return carro;
+    }
+
     //DESAFIO
-    public void atualizar(Carro carro) throws SQLException, ClassNotFoundException{
+    public void atualizar(Carro carro) throws SQLException, ClassNotFoundException, IdNaoEncontradoException{
         //Criar conexão
         Connection conexao = ConnectionFactory.getConnection();
 
@@ -84,11 +97,16 @@ public class CarroDao {
         stm.setInt(5, carro.getId());
 
         //Executar o comando
-        stm.executeUpdate();
+        int linhas = stm.executeUpdate();
+
+        //Recuperar as linhas atualizadas
+        if (linhas == 0){
+            throw new IdNaoEncontradoException("Carro não encontrado.");
+        }
 
     }
 
-    public void remover(int id) throws SQLException, ClassNotFoundException{
+    public void remover(int id) throws SQLException, ClassNotFoundException, IdNaoEncontradoException{
         //Criar conexão
         Connection conexao = ConnectionFactory.getConnection();
 
@@ -99,7 +117,12 @@ public class CarroDao {
         stm.setInt(1, id);
 
         //Executar o comando
-        stm.executeUpdate();
+        int linhas = stm.executeUpdate();
+
+        //Recuperar a quantidade de linhas removidas
+        if (linhas == 0){
+            throw new IdNaoEncontradoException("Carro não encontrado.");
+        }
     }
 
 }

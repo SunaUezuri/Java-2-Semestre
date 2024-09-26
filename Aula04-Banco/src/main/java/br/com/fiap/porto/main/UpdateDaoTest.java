@@ -1,6 +1,7 @@
 package br.com.fiap.porto.main;
 
 import br.com.fiap.porto.dao.CarroDao;
+import br.com.fiap.porto.exception.IdNaoEncontradoException;
 import br.com.fiap.porto.model.Carro;
 
 import javax.swing.*;
