@@ -1,5 +1,6 @@
 package br.com.fiap.porto.dao;
 
+import br.com.fiap.porto.exception.IdNaoEncontradoException;
 import br.com.fiap.porto.factory.ConnectionFactory;
 import br.com.fiap.porto.model.Concessionaria;
 
@@ -51,6 +52,49 @@ public class ConcessionariaDao {
         }
 
         return list;
+    }
+
+    public void update (Concessionaria concessionaria) throws SQLException,
+            ClassNotFoundException, IdNaoEncontradoException{
+
+        //Criando a conexão com o banco de dados
+        Connection conexao = ConnectionFactory.getConnection();
+
+        //Criando o prepared statement
+        PreparedStatement stm = conexao.prepareStatement("update t_concessionaria set nm_concessionaria = ?, " +
+                "nr_cnpj = ?, nr_veiculo_maximo = ? where id_concessionaria = ?");
+
+        //Setando os valores no SQL
+        stm.setString(1, concessionaria.getNome());
+        stm.setString(2, concessionaria.getCnpj());
+        stm.setInt(3, concessionaria.getArmazenamento());
+        stm.setInt(4, concessionaria.getId());
+
+        //Executar o comando SQL
+        int lines = stm.executeUpdate();
+
+        if (lines == 0){
+            throw new IdNaoEncontradoException("Concessionária não encontrada.");
+        }
+    }
+
+    public void delete (int id) throws SQLException, ClassNotFoundException, IdNaoEncontradoException{
+
+        //Criando a conexão com o banco
+        Connection conexao = ConnectionFactory.getConnection();
+
+        //Criando o PreparedStatement
+        PreparedStatement stm = conexao.prepareStatement("delete from t_concessionaria where id_concessionaria = ?");
+
+        //Setando o valor no SQL
+        stm.setInt(1, id);
+
+        //Exxecutando o comando
+        int linhas = stm.executeUpdate();
+
+        if (linhas == 0){
+            throw new IdNaoEncontradoException("Id não encontrado");
+        }
     }
 
     private Concessionaria parseConcessionaria(ResultSet resultSet) throws SQLException {
