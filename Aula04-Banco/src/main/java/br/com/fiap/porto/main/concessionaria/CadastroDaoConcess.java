@@ -1,6 +1,7 @@
 package br.com.fiap.porto.main;
 
 import br.com.fiap.porto.dao.ConcessionariaDao;
+import br.com.fiap.porto.factory.ConnectionFactory;
 import br.com.fiap.porto.model.Concessionaria;
 
 import javax.swing.*;
