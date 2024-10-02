@@ -4,6 +4,7 @@ import br.com.fiap.porto.exception.IdNaoEncontradoException;
 import br.com.fiap.porto.factory.ConnectionFactory;
 import br.com.fiap.porto.model.Carro;
 
+import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +12,27 @@ import java.util.List;
 //Classe responsável por interagir com o banco de dados e realizar ações ações na tabela T_CARRO
 public class CarroDao {
 
+    private Connection conexao;
+
+    public CarroDao(Connection conexao){
+        this.conexao = conexao;
+    }
+
     public void cadastrar(Carro carro) throws SQLException, ClassNotFoundException {
-        Connection conexao = ConnectionFactory.getConnection();
         //Criar um statement configurável
         PreparedStatement stmt = conexao.prepareStatement ("insert into t_carro (id_carro, ds_modelo, " +
-                "nr_placa, ds_motor, ds_automatico) values (sq_t_carro.nextval, ?, ?, ?, ?)");
+                "nr_placa, ds_motor, ds_automatico, fk_id_concessionaria) " +
+                "values (sq_t_carro.nextval, ?, ?, ?, ?, ?)");
         //Setar os valores do carro na query
         stmt.setString(1, carro.getModelo());
         stmt.setString(2, carro.getPlaca());
         stmt.setFloat(3, carro.getMotor());
         stmt.setBoolean(4, carro.isAutomatico());
+        if (carro.getConcessionaria() != null){
+            stmt.setInt(5, carro.getConcessionaria().getId());
+        } else {
+            stmt.setNull(5, Types.INTEGER);
+        }
         //Executar o comando SQL
         stmt.executeUpdate();
     }
@@ -28,9 +40,7 @@ public class CarroDao {
     //TAREFA
 
     //Pesquisar o carro por id
-    public Carro pesquisarPorId(int id) throws SQLException, ClassNotFoundException, IdNaoEncontradoException {
-        //Criar uma conexão com o banco
-        Connection conexao = ConnectionFactory.getConnection();
+    public Carro pesquisarPorId(int id) throws SQLException, IdNaoEncontradoException {
         //Criar um Statement
         PreparedStatement stm = conexao.prepareStatement("select * from t_carro where id_carro = ?");
         //Setar o id no comando SQL
@@ -48,8 +58,6 @@ public class CarroDao {
 
 
     public List<Carro> listar() throws SQLException, ClassNotFoundException{
-        //Criar uma conexão com o banco
-        Connection conexao = ConnectionFactory.getConnection();
         //Criar um Statement
         Statement stm = conexao.createStatement();
         //Executar o comando SQL
@@ -83,8 +91,6 @@ public class CarroDao {
 
     //DESAFIO
     public void atualizar(Carro carro) throws SQLException, ClassNotFoundException, IdNaoEncontradoException{
-        //Criar conexão
-        Connection conexao = ConnectionFactory.getConnection();
 
         //Criar o PreparedStatement
         PreparedStatement stm = conexao.prepareStatement("update t_carro set ds_modelo = ?, nr_placa= ?, ds_motor= ?, ds_automatico= ? where id_carro= ?");
@@ -107,8 +113,7 @@ public class CarroDao {
     }
 
     public void remover(int id) throws SQLException, ClassNotFoundException, IdNaoEncontradoException{
-        //Criar conexão
-        Connection conexao = ConnectionFactory.getConnection();
+
 
         //Criar o PreparedStatement
         PreparedStatement stm = conexao.prepareStatement("delete from t_carro where id_carro = ?");

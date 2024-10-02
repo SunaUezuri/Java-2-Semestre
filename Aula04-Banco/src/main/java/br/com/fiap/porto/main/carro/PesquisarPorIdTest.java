@@ -1,20 +1,26 @@
-package br.com.fiap.porto.main;
+package br.com.fiap.porto.main.carro;
 
 import br.com.fiap.porto.dao.CarroDao;
+import br.com.fiap.porto.factory.ConnectionFactory;
 import br.com.fiap.porto.model.Carro;
 
 import javax.swing.*;
+import java.sql.Connection;
 
 public class PesquisarPorIdTest {
     public static void main(String[] args) {
 
         //Pesquisa um carro pelo ID
 
-        CarroDao dao = new CarroDao();
 
-        int id = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID do carro que deseja ver: "));
 
         try {
+            int id = Integer.parseInt(JOptionPane.showInputDialog("Insira o ID do carro que deseja ver: "));
+
+            Connection conexao = ConnectionFactory.getConnection();
+
+            CarroDao dao = new CarroDao(conexao);
+
             Carro carro = dao.pesquisarPorId(id);
 
             //Exibir os dados do carro

@@ -1,7 +1,6 @@
 package br.com.fiap.porto.dao;
 
 import br.com.fiap.porto.exception.IdNaoEncontradoException;
-import br.com.fiap.porto.factory.ConnectionFactory;
 import br.com.fiap.porto.model.Concessionaria;
 
 import java.sql.*;
@@ -10,10 +9,11 @@ import java.util.List;
 
 public class ConcessionariaDao {
 
-    public void cadastrar(Concessionaria concessionaria) throws SQLException, ClassNotFoundException{
+    private Connection conexao;
 
-        //Criar uma conexão
-        Connection conexao = ConnectionFactory.getConnection();
+    public ConcessionariaDao(Connection conexao) {this.conexao = conexao;}
+
+    public void cadastrar(Concessionaria concessionaria) throws SQLException, ClassNotFoundException{
 
         //Criar o statement
         PreparedStatement stmt = conexao.prepareStatement("insert into t_concessionaria (id_concessionaria, " +
@@ -30,9 +30,6 @@ public class ConcessionariaDao {
 
     //Método para listar as concessionárias registradas no banco
     public List<Concessionaria> listar() throws SQLException, ClassNotFoundException{
-
-        //Criar a conexão com o banco
-        Connection conexao = ConnectionFactory.getConnection();
 
         //Criando o Statement
         Statement stm = conexao.createStatement();
@@ -54,11 +51,26 @@ public class ConcessionariaDao {
         return list;
     }
 
+    public Concessionaria pesquisaId(int id) throws SQLException, IdNaoEncontradoException{
+
+        //Criando o Statement
+        PreparedStatement stm = conexao.prepareStatement("select * from t_concessionaria where id_concessionaria = ?");
+
+        //Setando o id no comando sql
+        stm.setInt(1, id);
+
+        //Executar o comando SQL
+        ResultSet resultSet = stm.executeQuery();
+
+        if (!resultSet.next()){
+            throw new IdNaoEncontradoException("Concessionária não encontrada");
+        }
+
+        return parseConcessionaria(resultSet);
+    }
+
     public void update (Concessionaria concessionaria) throws SQLException,
             ClassNotFoundException, IdNaoEncontradoException{
-
-        //Criando a conexão com o banco de dados
-        Connection conexao = ConnectionFactory.getConnection();
 
         //Criando o prepared statement
         PreparedStatement stm = conexao.prepareStatement("update t_concessionaria set nm_concessionaria = ?, " +
@@ -79,9 +91,6 @@ public class ConcessionariaDao {
     }
 
     public void delete (int id) throws SQLException, ClassNotFoundException, IdNaoEncontradoException{
-
-        //Criando a conexão com o banco
-        Connection conexao = ConnectionFactory.getConnection();
 
         //Criando o PreparedStatement
         PreparedStatement stm = conexao.prepareStatement("delete from t_concessionaria where id_concessionaria = ?");
