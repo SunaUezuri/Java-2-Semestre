@@ -21,7 +21,7 @@ public class Main {
      */
     public static HttpServer startServer() {
         // create a resource config that scans for JAX-RS resources and providers
-        // in org.example package
+        // in br.com.fiap package
         final ResourceConfig rc = new ResourceConfig().packages("br.com.fiap");
 
         // create and start a new instance of grizzly http server

@@ -1,6 +1,5 @@
-package org.example;
+package br.com.fiap;
 
-import br.com.fiap.Main;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
