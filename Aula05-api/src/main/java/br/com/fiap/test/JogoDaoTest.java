@@ -60,6 +60,17 @@ public class JogoDaoTest {
                 System.out.println("Jogo não encontrado após remoção (conforme esperado).");
             }
 
+            //8. Teste de pesquisa por nome
+            try {
+                List<Jogo> jogos = dao.listarPorNome("FIFA");
+
+                for (Jogo j : jogos){
+                    System.out.println(j + "\n");
+                }
+            } catch (Exception e){
+                System.err.println(e.getMessage());
+            }
+
         } catch (SQLException | ClassNotFoundException | IdNaoEncontradoException e) {
             e.printStackTrace();
         } finally {
