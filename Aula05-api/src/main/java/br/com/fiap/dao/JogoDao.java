@@ -2,6 +2,7 @@ package br.com.fiap.dao;
 
 import br.com.fiap.exception.IdNaoEncontradoException;
 import br.com.fiap.model.Classificacao;
+import br.com.fiap.model.Desenvolvedora;
 import br.com.fiap.model.Jogo;
 
 import java.sql.*;
@@ -11,12 +12,13 @@ import java.util.List;
 
 public class JogoDao {
 
-    private static final String INSERT_SQL = "INSERT INTO T_JOGO (id_jogo, ds_nome, dt_lancamento, ds_classificacao) VALUES (SQ_T_JOGO.NEXTVAL, ?, ?, ?)";
+    private static final String INSERT_SQL = "INSERT INTO T_JOGO (id_jogo, ds_nome, dt_lancamento, ds_classificacao, id_desenvolvedora) VALUES (SQ_T_JOGO.NEXTVAL, ?, ?, ?, ?)";
     private static final String SELECT_BY_ID_SQL = "SELECT * FROM T_JOGO WHERE id_jogo = ?";
     private static final String SELECT_ALL_SQL = "SELECT * FROM T_JOGO";
-    private static final String UPDATE_SQL = "UPDATE T_JOGO SET ds_nome = ?, dt_lancamento = ?, ds_classificacao = ? WHERE id_jogo = ?";
+    private static final String UPDATE_SQL = "UPDATE T_JOGO SET ds_nome = ?, dt_lancamento = ?, ds_classificacao = ?, id_desenvolvedora = ? WHERE id_jogo = ?";
     private static final String DELETE_SQL = "DELETE FROM T_JOGO WHERE id_jogo = ?";
-    private static final String SELECT_BY_NAME = "SELECT * FROM T_JOGO WHERE ds_nome like ?";
+    private static final String SELECT_BY_NAME = "SELECT * FROM T_JOGO WHERE upper(ds_nome) like upper(?)";
+    private static final String SELECT_BY_ID_DESENVOLVEDORA_SQL = "SELECT * FROM T_JOGO WHERE ID_DESENVOLVEDORA = ?";
 
     private Connection conexao;
 
@@ -24,11 +26,34 @@ public class JogoDao {
         this.conexao = conexao;
     }
 
+    public List<Jogo> listarPorNome(String nome) throws SQLException {
+        PreparedStatement stm = conexao.prepareStatement(SELECT_BY_NAME);
+        stm.setString(1, "%" + nome + "%");
+        ResultSet resultSet = stm.executeQuery();
+        List<Jogo> lista = new ArrayList<>();
+        while (resultSet.next()){
+            lista.add(parseJogo(resultSet));
+        }
+        return lista;
+    }
+
+    public List<Jogo> listarPorDesenvolvedora(int id) throws SQLException{
+        PreparedStatement stm = conexao.prepareStatement(SELECT_BY_ID_DESENVOLVEDORA_SQL);
+        stm.setInt(1, id);
+        ResultSet resultSet = stm.executeQuery();
+        List<Jogo> lista = new ArrayList<>();
+        while (resultSet.next()){
+            lista.add(parseJogo(resultSet));
+        }
+        return lista;
+    }
+
     public void cadastrar(Jogo jogo) throws SQLException {
-        PreparedStatement stmt = conexao.prepareStatement(INSERT_SQL, new String[] {"id_jogo"});
+        PreparedStatement stmt = conexao.prepareStatement(INSERT_SQL,
+                new String[] {"id_jogo"});
         preencherStatementComJogo(stmt, jogo);
         stmt.executeUpdate();
-        //Recuperar o id gerado pela sequence
+        //recuperar o id gerado pela sequence
         ResultSet resultSet = stmt.getGeneratedKeys();
         resultSet.next();
         jogo.setId(resultSet.getInt(1));
@@ -41,21 +66,6 @@ public class JogoDao {
         if (!rs.next())
             throw new IdNaoEncontradoException("Jogo não encontrado");
         return parseJogo(rs);
-    }
-
-    public List<Jogo> listarPorNome(String nome) throws SQLException{
-        PreparedStatement stmt = conexao.prepareStatement(SELECT_BY_NAME);
-        stmt.setString(1, "%" + nome + "%");
-        ResultSet rs = stmt.executeQuery();
-
-        List<Jogo> jogos = new ArrayList<>();
-
-
-
-        while (rs.next()){
-            jogos.add(parseJogo(rs));
-        }
-        return jogos;
     }
 
     public List<Jogo> listar() throws SQLException {
@@ -90,6 +100,11 @@ public class JogoDao {
         } else {
             stmt.setNull(3, Types.VARCHAR);
         }
+        if (jogo.getDesenvolvedora() != null){
+            stmt.setLong(4, jogo.getDesenvolvedora().getId());
+        } else {
+            stmt.setNull(4, Types.INTEGER);
+        }
     }
 
     private Jogo parseJogo(ResultSet resultSet) throws SQLException {
@@ -97,9 +112,11 @@ public class JogoDao {
         String nome = resultSet.getString("ds_nome");
         LocalDate dataLancamento = resultSet.getDate("dt_lancamento").toLocalDate();
         String classificacaoStr = resultSet.getString("ds_classificacao");
-        Classificacao classificacao = classificacaoStr != null ? Classificacao.valueOf(classificacaoStr) : null;
+        Classificacao classificacao = classificacaoStr != null ?
+                Classificacao.valueOf(classificacaoStr) : null;
+        Long idDev = resultSet.getLong("id_desenvolvedora");
 
-        return new Jogo(id, nome, dataLancamento, classificacao);
+        return new Jogo(id, nome, dataLancamento, classificacao, new Desenvolvedora(idDev));
     }
 }
 

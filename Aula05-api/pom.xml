@@ -36,7 +36,7 @@
             <artifactId>ojdbc8</artifactId>
             <version>21.1.0.0</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-binding</artifactId>
         </dependency>

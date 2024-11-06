@@ -24,7 +24,7 @@ public class JogoDaoTest {
             JogoDao dao = new JogoDao(conexao);
 
             // 1. Teste de Inserção
-            Jogo novoJogo = new Jogo(0, "FIFA 22", LocalDate.of(2022, 9, 27), Classificacao.LIVRE);
+            Jogo novoJogo = new Jogo(0, "FIFA 22", LocalDate.of(2022, 9, 27), Classificacao.LIVRE, null);
             dao.cadastrar(novoJogo);
             System.out.println("Jogo cadastrado com sucesso!");
 
@@ -36,7 +36,7 @@ public class JogoDaoTest {
             }
 
             // 3. Teste de Pesquisa por ID
-            Jogo jogoPesquisado = dao.pesquisarPorId(1); // Ajustar o ID conforme necessário
+            Jogo jogoPesquisado = dao.pesquisarPorId(37); // Ajustar o ID conforme necessário
             System.out.println("Jogo pesquisado: " + jogoPesquisado);
 
             // 4. Teste de Atualização
@@ -60,16 +60,17 @@ public class JogoDaoTest {
                 System.out.println("Jogo não encontrado após remoção (conforme esperado).");
             }
 
-            //8. Teste de pesquisa por nome
             try {
-                List<Jogo> jogos = dao.listarPorNome("FIFA");
-
-                for (Jogo j : jogos){
-                    System.out.println(j + "\n");
+                // 8. Teste de Pesquisa por nome
+                List<Jogo> lista = dao.listarPorNome("a");
+                System.out.println("Lista de jogos: (" + lista.size() + ")" );
+                for (Jogo jogo : lista) {
+                    System.out.println(jogo);
                 }
-            } catch (Exception e){
-                System.err.println(e.getMessage());
+            }catch(SQLException e){
+                System.out.println("Erro ao listar por nome");
             }
+
 
         } catch (SQLException | ClassNotFoundException | IdNaoEncontradoException e) {
             e.printStackTrace();
